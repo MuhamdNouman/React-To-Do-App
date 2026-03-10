@@ -44,20 +44,20 @@ export default function App() {
   };
 
   const handleRestore = (id) => {
+
     setTasks(
       tasks.map(
         (t) => (t.id === id ? { ...t, completed: false } : t), // Update its status to not completed
       ),
     );
-    
-    const taskToRestore = deletedTasks.find((t) =>t.id === id); // find the tasks meting the condition
-    if(taskToRestore){
-     setTasks((prevTasks) => [
-      ...prevTasks, { ...taskToRestore, completed: false }
-    ])
+
+    const taskToRestore = deletedTasks.find((t) => t.id === id); // find the tasks meting the condition
+    if (taskToRestore) {
+      setTasks((prevTasks) => [
+        ...prevTasks, taskToRestore ]);
     }
-    
-     setDeletedTasks((prevTasks) => prevTasks.filter((t) => t.id !== id))
+
+    setDeletedTasks((prevTasks) => prevTasks.filter((t) => t.id !== id));
   };
 
   return (
@@ -65,64 +65,65 @@ export default function App() {
       <div>
         <h1>Add Tasks</h1>
 
-        <input type="Text" placeholder="Enter a task" ref={inputRef} />
+        <input
+          type="Text"
+          placeholder="Enter a task"
+          autoComplete="new-password"
+          ref={inputRef}
+        />
 
         <button onClick={handleAdd} style={{ marginLeft: "10px" }}>
           ➕Add
         </button>
 
         <ol>
-          {tasks.map((t) => (
-            <li key={t.id}>
-              {/* 1. Use conditional styling for the text */}
-              <span
-                style={{
-                  textDecoration: t.completed ? "line-through" : "none",
-                  color: t.completed ? "gray" : "black",
-                }}
-              >
+          {tasks
+            .filter((t) => !t.completed)
+            .map((t) => (
+              <li key={t.id}>
                 {t.task}
-              </span>
-              <button
-                onClick={() => handleDelete(t.id)}
-                style={{ marginLeft: "10px", marginTop: "10px" }}
-              >
-                ❌Delete
-              </button>
-              <button
-                onClick={() => handleComplete(t.id)}
-                style={{ marginLeft: "10px", marginTop: "10px" }}
-              >
-                ✅Complete
-              </button>
-            </li>
-          ))}
+                <button
+                  onClick={() => handleDelete(t.id)}
+                  style={{ marginLeft: "10px", marginTop: "10px" }}
+                >
+                  ❌Delete
+                </button>
+                <button
+                  onClick={() => handleComplete(t.id)}
+                  style={{ marginLeft: "10px", marginTop: "10px" }}
+                >
+                  ✅Complete
+                </button>
+              </li>
+            ))}
         </ol>
       </div>
 
       <div>
         <h1>Completed Tasks</h1>
         <ol>
-          {tasks.map(
-            (t) =>
-              t.completed && (
-                <li key={t.id}>
-                  ✅{t.task}
-                  <button
-                    onClick={() => handleDelete(t.id)}
-                    style={{ marginLeft: "10px", marginTop: "10px" }}
-                  >
-                    ❌Delete
-                  </button>
-                  <button
-                    onClick={() => handleRestore(t.id)}
-                    style={{ marginLeft: "10px", marginTop: "10px" }}
-                  >
-                    🔁Restore
-                  </button>
-                </li>
-              ),
-          )}
+          {tasks
+            .filter((t) => t.completed)
+            .map(
+              (t) =>
+                t.completed && (
+                  <li key={t.id}>
+                    ✅{t.task}
+                    <button
+                      onClick={() => handleDelete(t.id)}
+                      style={{ marginLeft: "10px", marginTop: "10px" }}
+                    >
+                      ❌Delete
+                    </button>
+                    <button
+                      onClick={() => handleRestore(t.id)}
+                      style={{ marginLeft: "10px", marginTop: "10px" }}
+                    >
+                      🔁Restore
+                    </button>
+                  </li>
+                ),
+            )}
         </ol>
       </div>
 
