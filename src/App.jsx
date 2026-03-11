@@ -1,26 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 
 export default function App() {
-
   const inputRef = useRef(null); // state to store the current input value
 
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : [];
-  }, []); // state to store the list of task
+  }, []);
 
-  const [deletedTasks, setDeletedTasks] = useState(()=>{
+  const [deletedTasks, setDeletedTasks] = useState(() => {
     const saved = localStorage.getItem("deletedTasks");
     return saved ? JSON.parse(saved) : [];
-  },[]); // state to store the deleted items
+  }, []); // state to store the deleted items
 
-
-  useEffect(()=>{
-    localStorage.setItem("tasks", JSON.stringify(tasks)), [tasks]
+  useEffect(() => {
+    (localStorage.setItem("tasks", JSON.stringify(tasks)), [tasks]);
   });
 
-  useEffect(()=>{
-    localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks)), [deletedTasks]
+  useEffect(() => {
+    (localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks)),
+      [deletedTasks]);
   });
 
   const handleAdd = () => {
@@ -87,13 +86,23 @@ export default function App() {
     );
   };
 
+  const clearAllTasks = () => {
+    {
+      setTasks([]); // This triggers the useEffect to clear LocalStorage automatically
+    }
+  };
+
+  const clearTrash = () => {
+    setDeletedTasks([]); // This clears the trash state and the trash LocalStorage
+  };
+
   return (
     <>
       <div>
         <h1>Add Tasks</h1>
 
         <input
-          type="Text"
+          type="text"
           placeholder="Enter a task"
           autoComplete="new-password"
           onKeyDown={(e) => {
@@ -105,6 +114,12 @@ export default function App() {
         <button onClick={handleAdd} style={{ marginLeft: "10px" }}>
           ➕Add
         </button>
+
+        {tasks.length > 0 && (
+          <button onClick={clearAllTasks} style={{ marginLeft: "10px" }}>
+            🧹 Clear All Tasks
+          </button>
+        )}
 
         <ol>
           {tasks
@@ -203,6 +218,12 @@ export default function App() {
               </button>
             </li>
           ))}
+
+          {deletedTasks.length > 0 && (
+            <button onClick={clearTrash} style={{ marginTop: "10px" }}>
+              🗑️ Empty Trash
+            </button>
+          )}
         </ol>
       </div>
     </>
