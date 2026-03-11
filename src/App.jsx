@@ -1,9 +1,27 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function App() {
+
   const inputRef = useRef(null); // state to store the current input value
-  const [tasks, setTasks] = useState([]); // state to store the list of task
-  const [deletedTasks, setDeletedTasks] = useState([]); // state to store the deleted items
+
+  const [tasks, setTasks] = useState(() => {
+    const saved = localStorage.getItem("tasks");
+    return saved ? JSON.parse(saved) : [];
+  }, []); // state to store the list of task
+
+  const [deletedTasks, setDeletedTasks] = useState(()=>{
+    const saved = localStorage.getItem("deletedTasks");
+    return saved ? JSON.parse(saved) : [];
+  },[]); // state to store the deleted items
+
+
+  useEffect(()=>{
+    localStorage.setItem("tasks", JSON.stringify(tasks)), [tasks]
+  });
+
+  useEffect(()=>{
+    localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks)), [deletedTasks]
+  });
 
   const handleAdd = () => {
     const item = inputRef.current.value.trim(); // Get the current value from the input field and trim whitespace
@@ -14,13 +32,10 @@ export default function App() {
       id: crypto.randomUUID(),
       task: item,
       completed: false,
+      isEditing: false,
     };
 
     setTasks([...tasks, newTask]);
-
-    console.log("Task added:", newTask);
-    console.log("Current tasks:", [...tasks, newTask]);
-
     inputRef.current.value = ""; // Clear input after adding
   };
 
@@ -44,7 +59,6 @@ export default function App() {
   };
 
   const handleRestore = (id) => {
-
     setTasks(
       tasks.map(
         (t) => (t.id === id ? { ...t, completed: false } : t), // Update its status to not completed
@@ -53,11 +67,24 @@ export default function App() {
 
     const taskToRestore = deletedTasks.find((t) => t.id === id); // find the tasks meting the condition
     if (taskToRestore) {
-      setTasks((prevTasks) => [
-        ...prevTasks, taskToRestore ]);
+      setTasks((prevTasks) => [...prevTasks, taskToRestore]);
     }
 
     setDeletedTasks((prevTasks) => prevTasks.filter((t) => t.id !== id));
+  };
+
+  const handleEdit = (id) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((t) => (t.id === id ? { ...t, isEditing: true } : t)),
+    );
+  };
+
+  const handleUpdate = (id, newTask) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((t) =>
+        t.id === id ? { ...t, task: newTask, isEditing: false } : t,
+      ),
+    );
   };
 
   return (
@@ -69,6 +96,9 @@ export default function App() {
           type="Text"
           placeholder="Enter a task"
           autoComplete="new-password"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAdd();
+          }}
           ref={inputRef}
         />
 
@@ -81,19 +111,51 @@ export default function App() {
             .filter((t) => !t.completed)
             .map((t) => (
               <li key={t.id}>
-                {t.task}
-                <button
-                  onClick={() => handleDelete(t.id)}
-                  style={{ marginLeft: "10px", marginTop: "10px" }}
-                >
-                  ❌Delete
-                </button>
-                <button
-                  onClick={() => handleComplete(t.id)}
-                  style={{ marginLeft: "10px", marginTop: "10px" }}
-                >
-                  ✅Complete
-                </button>
+                {t.isEditing ? (
+                  // EDIT MODE
+                  <>
+                    <input
+                      type="text"
+                      defaultValue={t.task}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter")
+                          handleUpdate(t.id, e.target.value);
+                        if (e.key === "Escape") handleUpdate(t.id, t.task); // Cancel
+                      }}
+                      autoFocus
+                    />
+                    <button
+                      onClick={(e) =>
+                        handleUpdate(t.id, e.target.previousSibling.value)
+                      }
+                    >
+                      💾 Save
+                    </button>
+                  </>
+                ) : (
+                  // READ MODE
+                  <>
+                    <span>{t.task}</span>
+                    <button
+                      onClick={() => handleDelete(t.id)}
+                      style={{ marginLeft: "10px", marginTop: "10px" }}
+                    >
+                      ❌Delete
+                    </button>
+                    <button
+                      onClick={() => handleComplete(t.id)}
+                      style={{ marginLeft: "10px", marginTop: "10px" }}
+                    >
+                      ✅Complete
+                    </button>
+                    <button
+                      onClick={() => handleEdit(t.id)}
+                      style={{ marginLeft: "10px", marginTop: "10px" }}
+                    >
+                      ✒️Update
+                    </button>
+                  </>
+                )}
               </li>
             ))}
         </ol>
