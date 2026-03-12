@@ -1,50 +1,45 @@
-#app{
+#app {
   display: flex;
   flex-wrap: nowrap;
-  flex-direction:row;
+  flex-direction: row;
   justify-content: center;
 }
 
-.card{
- width: 30vw;
- height: 65vh;
- margin: 20px;
- padding-top: 10px;
- padding-bottom: 20px;
- background: white;
- transition: border-radius 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
- border: 2px solid #2b2a2a;
-  display: flex;           /* make card flex container */
-  flex-direction: column;  /* stack children vertically */
+.card {
+  width: 100%;
+  height: 65vh;
+  margin: 20px;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  background: white;
+  transition: border-radius 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid #2b2a2a;
+  display: flex;
+  flex-direction: column;
 }
 
-h2{
+h2 {
   text-align: center;
   font-weight: 750;
   font-size: 25px;
-  color:  #000000;
+  color: #000000;
   font-family: Arial, Helvetica, sans-serif;
-  position: stick;
   top: 0;
   background-color: white;
-  z-index: 10;            
-  padding-bottom: 10px;
-  
+  z-index: 10;
 }
 
-h1{
+h1 {
   text-align: center;
   font-weight: 900;
   font-size: 30px;
-  color:  #000000;
+  color: #000000;
   font-family: Arial, Helvetica, sans-serif;
 }
-
 
 .input {
   border: 2px solid transparent;
   width: 15em;
-  height: 2.5em;
   padding-left: 1.2em;
   outline: none;
   overflow: hidden;
@@ -60,13 +55,21 @@ h1{
   background-color: white;
 }
 
-
 button {
-  font-family: PlusJakartaSans, -apple-system, BlinkMacSystemFont, Segoe UI,
-    Roboto, Oxygen, Cantarell, Helvetica Neue, Ubuntu, sans-serif;
+  font-family:
+    PlusJakartaSans,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Cantarell,
+    Helvetica Neue,
+    Ubuntu,
+    sans-serif;
   font-size: 0.9rem;
   align-items: center;
-  height: 2.5rem;
+  height: 2rem;
   border-radius: 0.4rem;
   font-weight: 600;
   padding: 0 0.5rem;
@@ -81,54 +84,56 @@ button:hover {
   background: #2b2a2a;
 }
 
-li{
-  font-family: PlusJakartaSans, -apple-system, BlinkMacSystemFont, Segoe UI,
-    Roboto, Oxygen, Cantarell, Helvetica Neue, Ubuntu, sans-serif;
+li {
+  font-family:
+    PlusJakartaSans,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Cantarell,
+    Helvetica Neue,
+    Ubuntu,
+    sans-serif;
   font-size: 17px;
-  font-weight:500;
+  font-weight: 500;
   color: #000000;
   margin-bottom: 10px;
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
   align-items: center;
-
 }
 
-.input-group{
+.input-group {
   display: flex;
   justify-content: center;
   gap: 10px;
   padding: 0px 12px;
 }
 
-.input-group input{
-  flex: 10;
+.input-group input {
+  flex: 4;
 }
 
-.action-buttons{
-  display: flex;
-  gap: 7px;
+.action-buttons {
+  display: none;
+  gap: 6px;
   padding: 0px 12px;
-  visibility: hidden; 
-
 }
 
 li:hover .action-buttons {
   opacity: 1;
-  visibility: visible;
+  display: flex;
 }
 
-.task-item{
-  /* display: flex;
-  align-self: flex-start;
-  align-items: center; */
-
+.task-item {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.updated-input{
+.updated-input {
   border: 2px solid transparent;
   width: 80%;
   height: 2em;
@@ -139,7 +144,7 @@ li:hover .action-buttons {
   border-radius: 10px;
 }
 
-.save-button{
+.save-button {
   font-size: 0.9rem;
   align-items: center;
   height: 2.3em;
@@ -151,9 +156,28 @@ li:hover .action-buttons {
   background: #000000;
 }
 
-.task-list{
+.task-list {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   flex: 1;
+}
+
+.completed-task-list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.empty-trash-button {
+  font-size: 0.9rem;
+  align-items: center;
+  height: 2.3em;
+  border-radius: 0.4rem;
+  font-weight: 600;
+  padding: 0 0.5rem;
+  align-self: center;
+  margin-top: auto;
+  position: sticky;
 }

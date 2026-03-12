@@ -155,7 +155,7 @@ export default function App() {
                       <span className="task-item">{t.task}</span>
                       <div className="action-buttons">
                         <button onClick={() => handleComplete(t.id)}>✅</button>
-                        <button onClick={() => handleEdit(t.id)}>✒️</button> 
+                        <button onClick={() => handleEdit(t.id)}>✒️</button>
                         <button onClick={() => handleDelete(t.id)}>🗑️</button>
                       </div>
                     </>
@@ -165,9 +165,9 @@ export default function App() {
           </ol>
         </div>
 
-        <div className="card shadow">
+        <div className="card">
           <h2>Completed Tasks</h2>
-          <ol>
+          <ol className="completed-task-list">
             {tasks
               .filter((t) => t.completed)
               .map(
@@ -175,18 +175,10 @@ export default function App() {
                   t.completed && (
                     <li key={t.id}>
                       ✅{t.task}
-                      <button
-                        onClick={() => handleDelete(t.id)}
-                        style={{ marginLeft: "10px", marginTop: "10px" }}
-                      >
-                        ❌Delete
-                      </button>
-                      <button
-                        onClick={() => handleRestore(t.id)}
-                        style={{ marginLeft: "10px", marginTop: "10px" }}
-                      >
-                        🔁Restore
-                      </button>
+                      <div className="action-buttons">
+                        <button onClick={() => handleDelete(t.id)}>🗑️</button>
+                        <button onClick={() => handleRestore(t.id)}>🔁</button>
+                      </div>
                     </li>
                   ),
               )}
@@ -195,25 +187,21 @@ export default function App() {
 
         <div className="card shadow">
           <h2>Deleted Tasks</h2>
-          <ol>
+          <ol className="completed-task-list">
             {deletedTasks.map((t) => (
               <li key={t.id}>
                 {t.task}
-                <button
-                  onClick={() => handleRestore(t.id)}
-                  style={{ marginLeft: "10px", marginTop: "10px" }}
-                >
-                  🔁Restore
-                </button>
+                <div className="action-buttons">
+                  <button onClick={() => handleRestore(t.id)}>🔁</button>
+                </div>
               </li>
             ))}
-
-            {deletedTasks.length > 0 && (
-              <button onClick={clearTrash} style={{ marginTop: "10px" }}>
-                🗑️ Empty Trash
-              </button>
-            )}
           </ol>
+          {deletedTasks.length > 0 && (
+            <button onClick={clearTrash} className="empty-trash-button">
+              🗑️ Empty Trash
+            </button>
+          )}
         </div>
       </div>
     </>
