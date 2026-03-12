@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import "./App.css";
 
 export default function App() {
   const inputRef = useRef(null); // state to store the current input value
@@ -98,133 +99,122 @@ export default function App() {
 
   return (
     <>
-      <div>
-        <h1>Add Tasks</h1>
+      <h1 className="app-title">To-Do list</h1>
+      <div id="app">
+        <div className="card shadow">
+          <h2>Add Tasks</h2>
+          <div className="input-group">
+            <input
+              type="text"
+              className="input"
+              placeholder="Enter a task"
+              autoComplete="new-password"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAdd();
+              }}
+              ref={inputRef}
+            />
 
-        <input
-          type="text"
-          placeholder="Enter a task"
-          autoComplete="new-password"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleAdd();
-          }}
-          ref={inputRef}
-        />
+            <button onClick={handleAdd}>➕Add</button>
 
-        <button onClick={handleAdd} style={{ marginLeft: "10px" }}>
-          ➕Add
-        </button>
+            {tasks.length > 0 && (
+              <button onClick={clearAllTasks}>Clear All</button>
+            )}
+          </div>
+          <ol className="task-list">
+            {tasks
+              .filter((t) => !t.completed)
+              .map((t) => (
+                <li key={t.id}>
+                  {t.isEditing ? (
+                    // EDIT MODE
+                    <>
+                      <input
+                        type="text"
+                        className="updated-input"
+                        defaultValue={t.task}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter")
+                            handleUpdate(t.id, e.target.value);
+                          if (e.key === "Escape") handleUpdate(t.id, t.task); // Cancel
+                        }}
+                        autoFocus
+                      />
+                      <button
+                        onClick={(e) =>
+                          handleUpdate(t.id, e.target.previousSibling.value)
+                        }
+                        className="save-button"
+                      >
+                        💾
+                      </button>
+                    </>
+                  ) : (
+                    // READ MODE
+                    <>
+                      <span className="task-item">{t.task}</span>
+                      <div className="action-buttons">
+                        <button onClick={() => handleComplete(t.id)}>✅</button>
+                        <button onClick={() => handleEdit(t.id)}>✒️</button> 
+                        <button onClick={() => handleDelete(t.id)}>🗑️</button>
+                      </div>
+                    </>
+                  )}
+                </li>
+              ))}
+          </ol>
+        </div>
 
-        {tasks.length > 0 && (
-          <button onClick={clearAllTasks} style={{ marginLeft: "10px" }}>
-            🧹 Clear All Tasks
-          </button>
-        )}
+        <div className="card shadow">
+          <h2>Completed Tasks</h2>
+          <ol>
+            {tasks
+              .filter((t) => t.completed)
+              .map(
+                (t) =>
+                  t.completed && (
+                    <li key={t.id}>
+                      ✅{t.task}
+                      <button
+                        onClick={() => handleDelete(t.id)}
+                        style={{ marginLeft: "10px", marginTop: "10px" }}
+                      >
+                        ❌Delete
+                      </button>
+                      <button
+                        onClick={() => handleRestore(t.id)}
+                        style={{ marginLeft: "10px", marginTop: "10px" }}
+                      >
+                        🔁Restore
+                      </button>
+                    </li>
+                  ),
+              )}
+          </ol>
+        </div>
 
-        <ol>
-          {tasks
-            .filter((t) => !t.completed)
-            .map((t) => (
+        <div className="card shadow">
+          <h2>Deleted Tasks</h2>
+          <ol>
+            {deletedTasks.map((t) => (
               <li key={t.id}>
-                {t.isEditing ? (
-                  // EDIT MODE
-                  <>
-                    <input
-                      type="text"
-                      defaultValue={t.task}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter")
-                          handleUpdate(t.id, e.target.value);
-                        if (e.key === "Escape") handleUpdate(t.id, t.task); // Cancel
-                      }}
-                      autoFocus
-                    />
-                    <button
-                      onClick={(e) =>
-                        handleUpdate(t.id, e.target.previousSibling.value)
-                      }
-                    >
-                      💾 Save
-                    </button>
-                  </>
-                ) : (
-                  // READ MODE
-                  <>
-                    <span>{t.task}</span>
-                    <button
-                      onClick={() => handleDelete(t.id)}
-                      style={{ marginLeft: "10px", marginTop: "10px" }}
-                    >
-                      ❌Delete
-                    </button>
-                    <button
-                      onClick={() => handleComplete(t.id)}
-                      style={{ marginLeft: "10px", marginTop: "10px" }}
-                    >
-                      ✅Complete
-                    </button>
-                    <button
-                      onClick={() => handleEdit(t.id)}
-                      style={{ marginLeft: "10px", marginTop: "10px" }}
-                    >
-                      ✒️Update
-                    </button>
-                  </>
-                )}
+                {t.task}
+                <button
+                  onClick={() => handleRestore(t.id)}
+                  style={{ marginLeft: "10px", marginTop: "10px" }}
+                >
+                  🔁Restore
+                </button>
               </li>
             ))}
-        </ol>
-      </div>
 
-      <div>
-        <h1>Completed Tasks</h1>
-        <ol>
-          {tasks
-            .filter((t) => t.completed)
-            .map(
-              (t) =>
-                t.completed && (
-                  <li key={t.id}>
-                    ✅{t.task}
-                    <button
-                      onClick={() => handleDelete(t.id)}
-                      style={{ marginLeft: "10px", marginTop: "10px" }}
-                    >
-                      ❌Delete
-                    </button>
-                    <button
-                      onClick={() => handleRestore(t.id)}
-                      style={{ marginLeft: "10px", marginTop: "10px" }}
-                    >
-                      🔁Restore
-                    </button>
-                  </li>
-                ),
-            )}
-        </ol>
-      </div>
-
-      <div>
-        <h1>Deleted Tasks</h1>
-        <ol>
-          {deletedTasks.map((t) => (
-            <li key={t.id}>
-              {t.task}
-              <button
-                onClick={() => handleRestore(t.id)}
-                style={{ marginLeft: "10px", marginTop: "10px" }}
-              >
-                🔁Restore
+            {deletedTasks.length > 0 && (
+              <button onClick={clearTrash} style={{ marginTop: "10px" }}>
+                🗑️ Empty Trash
               </button>
-            </li>
-          ))}
-
-          {deletedTasks.length > 0 && (
-            <button onClick={clearTrash} style={{ marginTop: "10px" }}>
-              🗑️ Empty Trash
-            </button>
-          )}
-        </ol>
+            )}
+          </ol>
+        </div>
       </div>
     </>
   );
