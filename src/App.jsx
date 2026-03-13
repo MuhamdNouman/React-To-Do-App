@@ -56,37 +56,37 @@ export default function App() {
   };
 
   const clearTrash = () => {
-    if (
-      alert(
+    if (alert(
         "This will permanently delete all items in the trash. Are you sure?",
-      )
-    )
+        )
+    ){
       setTasks(tasks.filter((t) => !t.isDeleted));
+    }
   };
 
   return (
     <>
       <h1 className="app-title">To-Do list</h1>
-      <div id="app">
+      <div className="input-group">
+        <input
+          type="text"
+          className="input"
+          placeholder="Enter a task"
+          autoComplete="new-password"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAdd();
+          }}
+          ref={inputRef}
+        />
+        <button onClick={handleAdd}> ➕ Add </button>
+        {/* {tasks.filter((t) => !t.isDeleted).length > 0 && (
+          <button onClick={clearAllTasks}>Clear All</button>
+        )} */}
+      </div>
+      <div id="app-container">
         {/* ADD TASKS SECTION */}
         <div className="card">
           <h2>Add Tasks</h2>
-          <div className="input-group">
-            <input
-              type="text"
-              className="input"
-              placeholder="Enter a task"
-              autoComplete="new-password"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleAdd();
-              }}
-              ref={inputRef}
-            />
-            <button onClick={handleAdd}> ➕ Add </button>
-            {tasks.filter((t) => !t.isDeleted).length > 0 && (
-              <button onClick={clearAllTasks}>Clear All</button>
-            )}
-          </div>
           <ol className="task-list">
             {tasks
               .filter((t) => !t.completed && !t.isDeleted) // Only show active, non-deleted
@@ -131,6 +131,13 @@ export default function App() {
                 </li>
               ))}
           </ol>
+        </div>
+        <div className="card">
+          <h2>Review Tasks</h2>
+        </div>
+
+        <div className="card">
+          <h2>Progress Tasks</h2>
         </div>
 
         {/* COMPLETED TASKS SECTION */}
