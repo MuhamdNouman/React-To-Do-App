@@ -2,30 +2,20 @@ import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 export default function App() {
-  const inputRef = useRef(null); // state to store the current input value
+  const inputRef = useRef(null);
 
+  // Task state
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : [];
-  }, []);
-
-  const [deletedTasks, setDeletedTasks] = useState(() => {
-    const saved = localStorage.getItem("deletedTasks");
-    return saved ? JSON.parse(saved) : [];
-  }, []); // state to store the deleted items
-
-  useEffect(() => {
-    (localStorage.setItem("tasks", JSON.stringify(tasks)), [tasks]);
   });
 
   useEffect(() => {
-    (localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks)),
-      [deletedTasks]);
-  });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const handleAdd = () => {
-    const item = inputRef.current.value.trim(); // Get the current value from the input field and trim whitespace
-
+    const item = inputRef.current.value.trim();
     if (!item) return;
 
     const newTask = {
@@ -33,75 +23,53 @@ export default function App() {
       task: item,
       completed: false,
       isEditing: false,
+      isDeleted: false,
     };
 
     setTasks([...tasks, newTask]);
-    inputRef.current.value = ""; // Clear input after adding
+    inputRef.current.value = "";
   };
 
-  const handleDelete = (id) => {
-    const taskToDelete = tasks.find((t) => t.id === id); // find the tasks meting the condition
-
-    if (taskToDelete) {
-      setDeletedTasks((prevTasks) => [...prevTasks, taskToDelete]);
-    }
-
-    // console.log("deleted tasks", deletedTasks);
-    setTasks((prevTasks) => prevTasks.filter((t) => t.id !== id));
+  const toggleStatus = (id, key) => {
+    setTasks(tasks.map((t) => (t.id === id ? { ...t, [key]: !t[key] } : t)));
   };
 
-  const handleComplete = (id) => {
-    setTasks(
-      tasks.map(
-        (t) => (t.id === id ? { ...t, completed: !t.completed } : t), // Update its status based on its current status
+  const handleUpdate = (id, newTaskText) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((t) =>
+        t.id === id ? { ...t, task: newTaskText, isEditing: false } : t,
       ),
     );
   };
 
   const handleRestore = (id) => {
-    setTasks(
-      tasks.map(
-        (t) => (t.id === id ? { ...t, completed: false } : t), // Update its status to not completed
-      ),
-    );
-
-    const taskToRestore = deletedTasks.find((t) => t.id === id); // find the tasks meting the condition
-    if (taskToRestore) {
-      setTasks((prevTasks) => [...prevTasks, taskToRestore]);
-    }
-
-    setDeletedTasks((prevTasks) => prevTasks.filter((t) => t.id !== id));
+    setTasks(tasks.map((t) => (t.id === id ? { ...t, isDeleted: false } : t)));
   };
 
-  const handleEdit = (id) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((t) => (t.id === id ? { ...t, isEditing: true } : t)),
-    );
-  };
-
-  const handleUpdate = (id, newTask) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((t) =>
-        t.id === id ? { ...t, task: newTask, isEditing: false } : t,
-      ),
-    );
+  const handleDelete = (id) => {
+    setTasks(tasks.map((t) => (t.id === id ? { ...t, isDeleted: true } : t)));
   };
 
   const clearAllTasks = () => {
-    {
-      setTasks([]); // This triggers the useEffect to clear LocalStorage automatically
-    }
+    if (confirm("Are you sure you want to delete your all list items"))
+      setTasks(tasks.map((t) => ({ ...t, isDeleted: true })));
   };
 
   const clearTrash = () => {
-    setDeletedTasks([]); // This clears the trash state and the trash LocalStorage
+    if (
+      alert(
+        "This will permanently delete all items in the trash. Are you sure?",
+      )
+    )
+      setTasks(tasks.filter((t) => !t.isDeleted));
   };
 
   return (
     <>
       <h1 className="app-title">To-Do list</h1>
       <div id="app">
-        <div className="card shadow">
+        {/* ADD TASKS SECTION */}
+        <div className="card">
           <h2>Add Tasks</h2>
           <div className="input-group">
             <input
@@ -114,20 +82,17 @@ export default function App() {
               }}
               ref={inputRef}
             />
-
-            <button onClick={handleAdd}>➕Add</button>
-
-            {tasks.length > 0 && (
+            <button onClick={handleAdd}> ➕ Add </button>
+            {tasks.filter((t) => !t.isDeleted).length > 0 && (
               <button onClick={clearAllTasks}>Clear All</button>
             )}
           </div>
           <ol className="task-list">
             {tasks
-              .filter((t) => !t.completed)
+              .filter((t) => !t.completed && !t.isDeleted) // Only show active, non-deleted
               .map((t) => (
                 <li key={t.id}>
                   {t.isEditing ? (
-                    // EDIT MODE
                     <>
                       <input
                         type="text"
@@ -136,7 +101,7 @@ export default function App() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter")
                             handleUpdate(t.id, e.target.value);
-                          if (e.key === "Escape") handleUpdate(t.id, t.task); // Cancel
+                          if (e.key === "Escape") handleUpdate(t.id, t.task);
                         }}
                         autoFocus
                       />
@@ -150,12 +115,15 @@ export default function App() {
                       </button>
                     </>
                   ) : (
-                    // READ MODE
                     <>
                       <span className="task-item">{t.task}</span>
                       <div className="action-buttons">
-                        <button onClick={() => handleComplete(t.id)}>✅</button>
-                        <button onClick={() => handleEdit(t.id)}>✒️</button>
+                        <button onClick={() => toggleStatus(t.id, "completed")}>
+                          ✅
+                        </button>
+                        <button onClick={() => toggleStatus(t.id, "isEditing")}>
+                          ✒️
+                        </button>
                         <button onClick={() => handleDelete(t.id)}>🗑️</button>
                       </div>
                     </>
@@ -165,39 +133,42 @@ export default function App() {
           </ol>
         </div>
 
+        {/* COMPLETED TASKS SECTION */}
         <div className="card">
           <h2>Completed Tasks</h2>
-          <ol className="completed-task-list">
+          <ol className="task-list">
             {tasks
-              .filter((t) => t.completed)
-              .map(
-                (t) =>
-                  t.completed && (
-                    <li key={t.id}>
-                      ✅{t.task}
-                      <div className="action-buttons">
-                        <button onClick={() => handleDelete(t.id)}>🗑️</button>
-                        <button onClick={() => handleRestore(t.id)}>🔁</button>
-                      </div>
-                    </li>
-                  ),
-              )}
+              .filter((t) => t.completed && !t.isDeleted) // Only show completed, non-deleted
+              .map((t) => (
+                <li key={t.id}>
+                  ✅{t.task}
+                  <div className="action-buttons">
+                    <button onClick={() => handleDelete(t.id)}>🗑️</button>
+                    <button onClick={() => toggleStatus(t.id, "completed")}>
+                      🔁
+                    </button>
+                  </div>
+                </li>
+              ))}
           </ol>
         </div>
 
-        <div className="card shadow">
+        {/* DELETED TASKS SECTION */}
+        <div className="card">
           <h2>Deleted Tasks</h2>
-          <ol className="completed-task-list">
-            {deletedTasks.map((t) => (
-              <li key={t.id}>
-                {t.task}
-                <div className="action-buttons">
-                  <button onClick={() => handleRestore(t.id)}>🔁</button>
-                </div>
-              </li>
-            ))}
+          <ol className="task-list">
+            {tasks
+              .filter((t) => t.isDeleted) // Show only items marked as deleted
+              .map((t) => (
+                <li key={t.id}>
+                  <span>{t.task}</span>
+                  <div className="action-buttons">
+                    <button onClick={() => handleRestore(t.id)}>🔁</button>
+                  </div>
+                </li>
+              ))}
           </ol>
-          {deletedTasks.length > 0 && (
+          {tasks.filter((t) => t.isDeleted).length > 0 && (
             <button onClick={clearTrash} className="empty-trash-button">
               🗑️ Empty Trash
             </button>

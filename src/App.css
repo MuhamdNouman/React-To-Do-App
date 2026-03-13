@@ -26,7 +26,6 @@ h2 {
   font-family: Arial, Helvetica, sans-serif;
   top: 0;
   background-color: white;
-  z-index: 10;
 }
 
 h1 {
@@ -84,6 +83,12 @@ button:hover {
   background: #2b2a2a;
 }
 
+ol{
+  padding: 20px 10px;
+  margin: 0;
+}
+
+
 li {
   font-family:
     PlusJakartaSans,
@@ -117,20 +122,17 @@ li {
 }
 
 .action-buttons {
-  display: none;
-  gap: 6px;
+  display: flex;
+  gap: 5px;
   padding: 0px 12px;
 }
 
-li:hover .action-buttons {
-  opacity: 1;
-  display: flex;
-}
 
 .task-item {
-  white-space: nowrap;
+  /* white-space: nowrap; */
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .updated-input {
@@ -163,12 +165,12 @@ li:hover .action-buttons {
   flex: 1;
 }
 
-.completed-task-list {
+/* .completed-task-list {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   flex: 1;
-}
+} */
 
 .empty-trash-button {
   font-size: 0.9rem;
